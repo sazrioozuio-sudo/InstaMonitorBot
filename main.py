@@ -25,7 +25,7 @@ Admin-Only Commands:
 """
 
 # ========= PUT YOUR TELEGRAM BOT TOKEN HERE =========
-BOT_TOKEN = ""   # <-- REPLACE THIS
+BOT_TOKEN = "9235879484:AAFDVq8bewX0mIFTCQxcRE__oCLLit0GhaA"   # <-- REPLACE THIS
 # Optional: where to store the SQLite file:
 DB_PATH = "./bot.db"
 # Default auto-check interval in minutes:
