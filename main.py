@@ -25,7 +25,8 @@ Admin-Only Commands:
 """
 
 # ========= PUT YOUR TELEGRAM BOT TOKEN HERE =========
-BOT_TOKEN = "9235879484:AAFDVq8bewX0mIFTCQxcRE__oCLLit0GhaA"   # <-- REPLACE THIS
+BOT_TOKEN = __import__("os").environ.get("BOT_TOKEN")
+
 # Optional: where to store the SQLite file:
 DB_PATH = "./bot.db"
 # Default auto-check interval in minutes:
