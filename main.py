@@ -653,12 +653,27 @@ async def on_startup(application: Application):
         if row["target_username"]:
             schedule_user_job(row, application)
 
+def keep_alive():
+    import os, threading
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
+        def log_message(self, *args):
+            pass
+    port = int(os.environ.get("PORT", 10000))
+    HTTPServer(("0.0.0.0", port), Handler).serve_forever()
+
 def build_application() -> Application:
-    if not BOT_TOKEN or BOT_TOKEN.strip() == "" or "PASTE_YOUR_BOT_TOKEN_HERE" in BOT_TOKEN:
-        raise RuntimeError("BOT_TOKEN is empty. Open the file and set your bot token at the top.")
+    if not BOT_TOKEN or BOT_TOKEN.strip() == "":
+        raise RuntimeError("BOT_TOKEN is empty")
     app = (
         ApplicationBuilder()
         .token(BOT_TOKEN)
+        .connect_timeout(30)
+        .read_timeout(30)
         .post_init(on_startup)
         .build()
     )
@@ -671,14 +686,15 @@ def build_application() -> Application:
     app.add_handler(CommandHandler("delay", delay_cmd))
     # Admin commands
     app.add_handler(CommandHandler("admin_list", admin_list_cmd))
-    app.add_handler(CommandHandler("admin_settarget", admin_settarget_cmd))
+    app.add_handler(CommandHandler("admin_set", admin_set_cmd))
     app.add_handler(CommandHandler("admin_check", admin_check_cmd))
     app.add_handler(CommandHandler("admin_delay", admin_delay_cmd))
     app.add_handler(CommandHandler("admin_broadcast", admin_broadcast_cmd))
     return app
 
-
 def main():
+    import threading
+    threading.Thread(target=keep_alive, daemon=True).start()
     app = build_application()
     app.run_polling(
         allowed_updates=Update.ALL_TYPES,
@@ -689,4 +705,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
